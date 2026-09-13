@@ -1,6 +1,6 @@
 # Contributing
 
-The GitHub front page is [README.md](README.md) (English). Chinese: [README.zh.md](README.zh.md).
+The GitHub front page is [README.md](README.md) (Chinese). English: [README.en.md](README.en.md).
 
 ## Local checks
 
