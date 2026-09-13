@@ -1,0 +1,16 @@
+{
+  "measurement": "Offline structural replay, not provider cache hits or billing.",
+  "legacy_rolling_rewrite": {
+    "requests": 10,
+    "comparable_pairs": 9,
+    "unchanged_previous_prefixes": 2,
+    "serialized_message_chars_total": 119326
+  },
+  "append_only": {
+    "requests": 10,
+    "comparable_pairs": 9,
+    "unchanged_previous_prefixes": 9,
+    "serialized_message_chars_total": 228330
+  },
+  "tradeoff": "Append-only can send more characters. Real usage and task quality must be measured before claiming cost savings."
+}

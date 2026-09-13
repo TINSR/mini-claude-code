@@ -1,0 +1,198 @@
+{
+  "measurement": "Live provider counters. cache_read_input_tokens is the provider-reported hit, not a local prefix metric.",
+  "provider": "deepseek",
+  "model": "deepseek-v4-flash",
+  "thinking_enabled": false,
+  "legacy_rolling_rewrite": {
+    "label": "legacy",
+    "rounds": 10,
+    "per_round": [
+      {
+        "input": 1898,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 15,
+        "round": 0,
+        "sent_chars": 4203
+      },
+      {
+        "input": 1061,
+        "cache_read": 1792,
+        "cache_write": 0,
+        "output": 8,
+        "round": 1,
+        "sent_chars": 8343
+      },
+      {
+        "input": 992,
+        "cache_read": 2816,
+        "cache_write": 0,
+        "output": 32,
+        "round": 2,
+        "sent_chars": 12483
+      },
+      {
+        "input": 3103,
+        "cache_read": 768,
+        "cache_write": 0,
+        "output": 32,
+        "round": 3,
+        "sent_chars": 12730
+      },
+      {
+        "input": 3038,
+        "cache_read": 896,
+        "cache_write": 0,
+        "output": 23,
+        "round": 4,
+        "sent_chars": 12977
+      },
+      {
+        "input": 3101,
+        "cache_read": 896,
+        "cache_write": 0,
+        "output": 21,
+        "round": 5,
+        "sent_chars": 13224
+      },
+      {
+        "input": 3036,
+        "cache_read": 1024,
+        "cache_write": 0,
+        "output": 17,
+        "round": 6,
+        "sent_chars": 13471
+      },
+      {
+        "input": 3099,
+        "cache_read": 1024,
+        "cache_write": 0,
+        "output": 32,
+        "round": 7,
+        "sent_chars": 13718
+      },
+      {
+        "input": 3034,
+        "cache_read": 1152,
+        "cache_write": 0,
+        "output": 23,
+        "round": 8,
+        "sent_chars": 13965
+      },
+      {
+        "input": 3097,
+        "cache_read": 1152,
+        "cache_write": 0,
+        "output": 32,
+        "round": 9,
+        "sent_chars": 14212
+      }
+    ],
+    "totals": {
+      "uncached_input_tokens": 25459,
+      "cache_read_input_tokens": 11520,
+      "cache_creation_input_tokens": 0,
+      "prompt_tokens_total": 36979,
+      "cache_hit_share": 0.3115,
+      "output_tokens": 235,
+      "sent_chars": 119326
+    }
+  },
+  "append_only": {
+    "label": "append_only",
+    "rounds": 10,
+    "per_round": [
+      {
+        "input": 1899,
+        "cache_read": 0,
+        "cache_write": 0,
+        "output": 13,
+        "round": 0,
+        "sent_chars": 4203
+      },
+      {
+        "input": 1062,
+        "cache_read": 1792,
+        "cache_write": 0,
+        "output": 22,
+        "round": 1,
+        "sent_chars": 8343
+      },
+      {
+        "input": 993,
+        "cache_read": 2816,
+        "cache_write": 0,
+        "output": 26,
+        "round": 2,
+        "sent_chars": 12483
+      },
+      {
+        "input": 1052,
+        "cache_read": 3712,
+        "cache_write": 0,
+        "output": 20,
+        "round": 3,
+        "sent_chars": 16623
+      },
+      {
+        "input": 983,
+        "cache_read": 4736,
+        "cache_write": 0,
+        "output": 32,
+        "round": 4,
+        "sent_chars": 20763
+      },
+      {
+        "input": 1042,
+        "cache_read": 5632,
+        "cache_write": 0,
+        "output": 32,
+        "round": 5,
+        "sent_chars": 24903
+      },
+      {
+        "input": 973,
+        "cache_read": 6656,
+        "cache_write": 0,
+        "output": 21,
+        "round": 6,
+        "sent_chars": 29043
+      },
+      {
+        "input": 1032,
+        "cache_read": 7552,
+        "cache_write": 0,
+        "output": 32,
+        "round": 7,
+        "sent_chars": 33183
+      },
+      {
+        "input": 963,
+        "cache_read": 8576,
+        "cache_write": 0,
+        "output": 32,
+        "round": 8,
+        "sent_chars": 37323
+      },
+      {
+        "input": 1022,
+        "cache_read": 9472,
+        "cache_write": 0,
+        "output": 22,
+        "round": 9,
+        "sent_chars": 41463
+      }
+    ],
+    "totals": {
+      "uncached_input_tokens": 11021,
+      "cache_read_input_tokens": 50944,
+      "cache_creation_input_tokens": 0,
+      "prompt_tokens_total": 61965,
+      "cache_hit_share": 0.8221,
+      "output_tokens": 252,
+      "sent_chars": 228330
+    }
+  },
+  "cached_price_breakeven_ratio": 0.3662,
+  "breakeven_note": "Append-only is cheaper when the cached-token price is below this fraction of the uncached price. Above it, the larger prompt wins."
+}
