@@ -29,16 +29,21 @@ jobs:
         run: python -m pytest
       - name: Offline prefix replay
         run: python examples/cache_replay.py
-      - name: Build wheel
-        run: python -m pip wheel --no-deps . --wheel-dir dist
+      - name: Build sdist and wheel
+        run: python -m build --outdir dist
       - name: Install wheel outside editable source
         shell: pwsh
         run: |
           python -m pip uninstall -y mini-claude-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $wheel = (Get-ChildItem dist/mini_claude_code-*.whl | Select-Object -First 1).FullName
           python -m pip install --no-deps $wheel
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Push-Location $env:RUNNER_TEMP
           mycc --help
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           mycc --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           mycc-usage
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Pop-Location

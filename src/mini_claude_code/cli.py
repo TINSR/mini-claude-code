@@ -1416,6 +1416,34 @@ def main():
    client = Anthropic(
       api_key=os.getenv('ANTHROPIC_API_KEY'), base_url=os.getenv('ANTHROPIC_BASE_URL'),
    )
+   stop_event = threading.Event()
+   workers = []
+   SESSION_STATE['session'] = None
+   try:
+      run_cli(stop_event, workers)
+   except (KeyboardInterrupt, EOFError):
+      print('\n[Session] 正在保存并退出')
+   finally:
+      # 停止下一批定时任务；已开始的轮次先完成自己的保存。
+      stop_event.set()
+      try:
+         with agent_lock:
+            session = SESSION_STATE['session']
+            if session is not None:
+               try:
+                  save_session(session)
+               except Exception as error:
+                  print(f'[Session] 退出时保存失败：{error}')
+      finally:
+         try:
+            close_mcp_clients()
+         finally:
+            for worker in workers:
+               worker.join(timeout=2)
+            client.close()
+
+
+def run_cli(stop_event, workers):
    configure_context_runtime(client, MODEL)
    configure_memory_runtime(client, MODEL, extract_text)
    configure_team_runtime(client, MODEL, TOOLS, extract_text)
@@ -1427,12 +1455,10 @@ def main():
 
    load_durable_jobs()
 
-   threading.Thread(target=cron_scheduler_loop,daemon=True,).start()
-
-   threading.Thread(
-      target=queue_processor_loop,
-      daemon=True,
-   ).start()
+   for target in (cron_scheduler_loop, queue_processor_loop):
+      worker = threading.Thread(target=target, args=(stop_event,), daemon=True)
+      workers.append(worker)
+      worker.start()
 
    print('[Cron] 定时任务调度器已启动')
    print(
@@ -1447,9 +1473,6 @@ def main():
       query = input("mycc >")
 
       if query.strip().lower() in ("q", "exit", ""):
-         with agent_lock:
-            save_session(SESSION_STATE['session'])
-            close_mcp_clients()
          break
 
       # 切换会话必须和交付、保存互斥，否则运行中的任务会存到新会话。

@@ -478,9 +478,9 @@ def run_cancel_cron(job_id):
    return cancel_job(job_id)
 
 
-def cron_scheduler_loop():
-   while True:
-      time.sleep(1)
+def cron_scheduler_loop(stop_event=None):
+   stop_event = stop_event or threading.Event()
+   while not stop_event.wait(1):
 
       current_time = datetime.now()
 
@@ -664,9 +664,9 @@ def process_cron_batch():
       agent_lock.release()
 
 
-def queue_processor_loop():
-   while True:
-      time.sleep(0.2)
+def queue_processor_loop(stop_event=None):
+   stop_event = stop_event or threading.Event()
+   while not stop_event.wait(0.2):
 
       try:
          process_cron_batch()

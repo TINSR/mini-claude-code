@@ -1,8 +1,12 @@
 # Changelog
 
-## 0.1.0 — 2026-09-13
+## 0.1.0 — 2026-10-03
 
-First public snapshot of the modular agent.
+First experimental release of the modular agent.
+
+- Save sessions and close MCP/API connections on Ctrl+C, EOF, normal exit, and runtime errors
+- Stop Cron polling during shutdown; an active turn finishes before final saving
+- Refresh Chinese and English setup instructions, source attribution, and release notes
 
 - Agent loop with PowerShell, filesystem tools, sessions, memory, cron, teammates, worktrees, and MCP
 - One authorization entry for the main loop, subagents, background workers, teammates, and cron

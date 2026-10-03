@@ -1,4 +1,5 @@
 import ast
+import threading
 from pathlib import Path
 
 import pytest
@@ -310,3 +311,64 @@ def test_agent_loop_recovers_from_context_error(monkeypatch):
 
     assert calls['count'] == 2
     assert messages[0]['content'] == 'summary'
+
+
+@pytest.mark.parametrize('exit_kind', ['exit', 'eof', 'interrupt', 'turn_error', 'save_error'])
+def test_cli_exit_saves_session_and_closes_resources(tmp_path, monkeypatch, exit_kind):
+    configure_sessions(tmp_path, monkeypatch)
+    session = session_manager.create_session('退出测试')
+    closed = []
+    monkeypatch.setattr('sys.argv', ['mycc'])
+    monkeypatch.setattr(cli, 'MODEL', 'test-model')
+    monkeypatch.setattr(cli, 'Anthropic', lambda **kwargs: type(
+        'Client', (), {'close': lambda self: closed.append('api')},
+    )())
+    for name in ('configure_context_runtime', 'configure_memory_runtime',
+                 'configure_team_runtime', 'configure_cron_runtime',
+                 'load_approved_operations', 'load_durable_jobs'):
+        monkeypatch.setattr(cli, name, lambda *args: None)
+    monkeypatch.setattr(cli, 'load_current_session', lambda: session)
+    stopped = []
+    started = threading.Barrier(3)
+
+    def worker(stop_event):
+        started.wait(timeout=5)
+        assert stop_event.wait(timeout=5)
+        stopped.append(True)
+
+    monkeypatch.setattr(cli, 'cron_scheduler_loop', worker)
+    monkeypatch.setattr(cli, 'queue_processor_loop', worker)
+    monkeypatch.setattr(cli, 'close_mcp_clients', lambda: closed.append('mcp'))
+
+    def read_input(prompt):
+        started.wait(timeout=5)
+        session.messages.append({'role': 'user', 'content': '应保存的内容'})
+        if exit_kind == 'eof':
+            raise EOFError
+        if exit_kind == 'interrupt':
+            raise KeyboardInterrupt
+        return 'run' if exit_kind == 'turn_error' else 'exit'
+
+    monkeypatch.setattr('builtins.input', read_input)
+    monkeypatch.setattr(cli, 'load_memories', lambda messages: '')
+    monkeypatch.setattr(cli, 'trigger_hooks', lambda *args: None)
+
+    def fail_turn(session):
+        raise RuntimeError('model failed')
+
+    monkeypatch.setattr(cli, 'run_session_agent', fail_turn)
+    if exit_kind == 'save_error':
+        def fail_save(session):
+            raise OSError('disk full')
+        monkeypatch.setattr(cli, 'save_session', fail_save)
+    if exit_kind == 'turn_error':
+        with pytest.raises(RuntimeError, match='model failed'):
+            cli.main()
+    else:
+        cli.main()
+
+    assert closed == ['mcp', 'api']
+    assert len(stopped) == 2
+    if exit_kind != 'save_error':
+        persisted = session_manager.load_session(session.id).messages
+        assert persisted[0]['content'] == '应保存的内容'
